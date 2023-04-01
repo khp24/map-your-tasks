@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706590232546",
+    "project_id": "map-your-tasks",
+    "storage_bucket": "map-your-tasks.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706590232546:android:2214080b13f084859533bb",
+        "android_client_info": {
+          "package_name": "com.example.map_your_tasks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706590232546-5r7ml61d8862fa588s1d2d3t7fp05e2d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDueVsXkOzOAcWl059ji5ANR-kOQcocmNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706590232546-5r7ml61d8862fa588s1d2d3t7fp05e2d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
