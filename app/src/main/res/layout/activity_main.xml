@@ -32,28 +32,10 @@
         android:layout_height="20dp"
         android:background="?android:attr/listDivider" />
 
-    <TextView
-        android:id="@+id/status_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAlignment="center"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.gms.common.SignInButton
         android:id="@+id/signInButton"
         android:layout_height="wrap_content"
         android:layout_width="120dp"
     />
-
-    <Button
-        android:id="@+id/signOutButton"
-        android:text="@string/call_explicit_intent"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content" />
 
 </LinearLayout>
