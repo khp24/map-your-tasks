@@ -2,4 +2,13 @@
     <string name="app_name">map-your-tasks</string>
     <string name="ui_top_message">Map Your Tasks</string>
     <string name="call_explicit_intent">Sign Out</string>
+    <string name="add_task">Add Task</string>
+
+    <!--Add Task View Strings-->
+    <string name="add_task_name">Name:</string>
+    <string name="add_task_desc">Description:</string>
+    <string name="add_task_addr">Address:</string>
+    <string name="add_task_validate_addr">Validate Address</string>
+    <string name="add_task_date">Date:</string>
+    <string name="add_task_time">Time:</string>
 </resources>
