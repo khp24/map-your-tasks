@@ -15,4 +15,11 @@
         android:layout_gravity="right"
         android:text="@string/call_explicit_intent" />
 
+    <Button
+        android:id="@+id/addTaskButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/add_task" />
+
 </LinearLayout>

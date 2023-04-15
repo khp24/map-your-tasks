@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SecondActivity extends AppCompatActivity implements View.OnClickListener {
     private Button msignOutButton;
+    private Button mAddTaskButton;
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
 
@@ -29,6 +30,9 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
         msignOutButton = findViewById(R.id.signOutButton);
         msignOutButton.setOnClickListener(this);
+
+        mAddTaskButton = findViewById(R.id.addTaskButton);
+        mAddTaskButton.setOnClickListener(this);
 
         userProfile();
     }
@@ -59,11 +63,19 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
+    private void moveToAddTaskActivity() {
+        final Intent intent = new Intent(SecondActivity.this, AddTaskActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.signOutButton:
                 logoutUser();
+                break;
+            case R.id.addTaskButton:
+                moveToAddTaskActivity();
                 break;
             default: break;
         }}
