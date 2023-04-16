@@ -68,6 +68,11 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
         googleSignInClient = GoogleSignIn.getClient(getApplicationContext(),  GoogleSignInOptions.DEFAULT_SIGN_IN);
     }
 
+    private void moveToMapActivity() {
+        final Intent intent = new Intent(SecondActivity.this, MapActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {// Handle navigation view item clicks here.
         int id = item.getItemId();
