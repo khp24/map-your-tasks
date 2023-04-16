@@ -1,7 +1,4 @@
-package com.example.map_your_tasks.activity;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.map_your_tasks.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -9,7 +6,9 @@ import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -17,18 +16,21 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.map_your_tasks.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
-import java.io.IOException;
+import com.example.map_your_tasks.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Activity responsible for letting a user add a new task
- */
-public class AddTaskActivity extends AppCompatActivity implements View.OnClickListener  {
+public class AddListFragment extends Fragment implements View.OnClickListener {
 
     private Geocoder geocoder;
     private EditText mEditName;
@@ -39,32 +41,38 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mEditDate;
     private EditText mEditTime;
     private Calendar calendar;
+    //private DatabaseReference firebaseDatabase;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        geocoder = new Geocoder(this, Locale.getDefault());
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
+
+        geocoder = new Geocoder(getContext(), Locale.getDefault());
 
         // Wire components
-        mEditName = findViewById(R.id.add_task_edit_name);
-        mEditDescription = findViewById(R.id.add_task_edit_desc);
-        mEditAddress = findViewById(R.id.add_task_edit_addr);
-        mValidateAddress = findViewById(R.id.add_task_validate_addr);
-        mValidatedAddress = findViewById(R.id.add_task_validated_addr);
+        mEditName = rootView.findViewById(R.id.add_task_edit_name);
+        mEditDescription = rootView.findViewById(R.id.add_task_edit_desc);
+        mEditAddress = rootView.findViewById(R.id.add_task_edit_addr);
+        mValidateAddress = rootView.findViewById(R.id.add_task_validate_addr);
+        mValidatedAddress = rootView.findViewById(R.id.add_task_validated_addr);
 
         mValidateAddress.setOnClickListener(this);
 
         // Set up editDate
-        mEditDate = findViewById(R.id.add_task_date);
+        mEditDate = rootView.findViewById(R.id.add_task_date);
         calendar = Calendar.getInstance();
         mEditDate.setOnClickListener(this);
 
         // Set up editTime
-        mEditTime = findViewById(R.id.add_task_time);
+        mEditTime = rootView.findViewById(R.id.add_task_time);
         mEditTime.setOnClickListener(this);
+
+        return rootView;
     }
+
 
     private void updateDateLabel(){
         String myFormat="MM/dd/yy";
@@ -81,7 +89,7 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
             possibleAddresses = geocoder.getFromLocationName(enteredAddress, 1);
             foundAddress = possibleAddresses.get(0);
         } catch (Exception e) {
-            Toast.makeText(AddTaskActivity.this, "Unable to find Matching Address",
+            Toast.makeText(getContext(), "Unable to find Matching Address",
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -98,7 +106,7 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
         }
         final String addressString = addressTextBuilder.toString();
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Suggested Address");
         builder.setMessage("Does this address look right: " + addressString);
         builder.setPositiveButton("Yes, use this address", new DialogInterface.OnClickListener() {
@@ -130,7 +138,7 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
             }
         };
         // Show the date picker
-        new DatePickerDialog(AddTaskActivity.this, date,
+        new DatePickerDialog(getContext(), date,
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
@@ -144,7 +152,7 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
             }
         };
         // Show the time picker
-        new TimePickerDialog(AddTaskActivity.this, time,
+        new TimePickerDialog(getContext(), time,
                 12, 0, true).show();
     }
 

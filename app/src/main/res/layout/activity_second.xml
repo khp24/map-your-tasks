@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".activity.SecondActivity">
+    tools:context=".activity.MainActivity">
 
-    <Button
-        android:id="@+id/signOutButton"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/call_explicit_intent" />
+    <!-- The main content view -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/addTaskButton"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/add_task" />
+    <!-- The navigation drawer. Next, we need to configure two files:
+         1. nav_drawer_header
+         2. nav_drawer_items
+     -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_drawer_header"
+        app:menu="@menu/nav_drawer_items" />
 
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
