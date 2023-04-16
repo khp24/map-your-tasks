@@ -1,4 +1,4 @@
-package com.example.map_your_tasks.activity.Model;
+package com.example.map_your_tasks.Model;
 
 import android.location.Address;
 import android.os.Parcel;
