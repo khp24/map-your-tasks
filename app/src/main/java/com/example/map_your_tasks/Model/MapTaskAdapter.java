@@ -1,4 +1,4 @@
-package Model;
+package com.example.map_your_tasks.Model;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.map_your_tasks.R;
-import com.example.map_your_tasks.activity.MapFragment;
+import com.example.map_your_tasks.fragments.MapFragment;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ import java.util.List;
  */
 public class MapTaskAdapter extends RecyclerView.Adapter<MapTaskAdapter.TaskViewHolder> {
 
-    private List<MapTaskItem> tasks;
+    private List<Task> tasks;
     // Need access to the fragment in order to set the visibility of markers
     private MapFragment mapFragment;
 
-    public MapTaskAdapter(List<MapTaskItem> tasks, final MapFragment mapFragment) {
+    public MapTaskAdapter(List<Task> tasks, final MapFragment mapFragment) {
         this.tasks = tasks;
         this.mapFragment = mapFragment;
     }
@@ -39,9 +39,9 @@ public class MapTaskAdapter extends RecyclerView.Adapter<MapTaskAdapter.TaskView
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        final MapTaskItem task = tasks.get(position);
-        holder.mNameView.setText(task.getTitle());
-        holder.mAddressView.setText(task.getAddress());
+        final Task task = tasks.get(position);
+        holder.mNameView.setText(task.getName());
+        holder.mAddressView.setText(task.getAddressString());
 
         holder.mSelectBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -61,7 +61,7 @@ public class MapTaskAdapter extends RecyclerView.Adapter<MapTaskAdapter.TaskView
         return tasks.size();
     }
 
-    public List<MapTaskItem> getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 

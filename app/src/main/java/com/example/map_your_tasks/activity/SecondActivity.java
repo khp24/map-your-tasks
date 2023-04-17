@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.AddListFragment;
-import com.example.map_your_tasks.fragments.MapFragment;
+import com.example.map_your_tasks.fragments.MapViewFragment;
 import com.example.map_your_tasks.fragments.ProductListFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -68,11 +68,6 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
         googleSignInClient = GoogleSignIn.getClient(getApplicationContext(),  GoogleSignInOptions.DEFAULT_SIGN_IN);
     }
 
-    private void moveToMapActivity() {
-        final Intent intent = new Intent(SecondActivity.this, MapActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {// Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -85,7 +80,7 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddListFragment()).commit();
                 break;
             case R.id.nav_map:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapViewFragment()).commit();
                 break;
             case R.id.log_out:
                 signOut();
