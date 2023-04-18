@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Task implements Parcelable {
 
@@ -84,6 +85,14 @@ public class Task implements Parcelable {
         this.address = address;
     }
 
+    public String getAddressString() {
+        final StringBuilder addressTextBuilder = new StringBuilder();
+        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+            addressTextBuilder.append(address.getAddressLine(i));
+        }
+        return addressTextBuilder.toString();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -96,5 +105,22 @@ public class Task implements Parcelable {
         parcel.writeString(description);
         parcel.writeSerializable(dueDate);
         parcel.writeParcelable(address, i);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task)) return false;
+        Task task = (Task) o;
+        return isComplete == task.isComplete
+                && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description)
+                && Objects.equals(dueDate, task.dueDate)
+                && Objects.equals(address, task.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isComplete, name, description, dueDate, address);
     }
 }
