@@ -2,12 +2,16 @@ package com.example.map_your_tasks.fragments;
 
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,14 +26,18 @@ import com.example.map_your_tasks.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import com.example.map_your_tasks.Model.MapTaskAdapter;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * This fragment describes the entire map view, it has a {@link MapFragment} as a subfragment
  */
 public class MapViewFragment extends Fragment {
 
+    private EditText mFilterDistance;
+    private Button mFilterButton;
     private CheckBox mCheckAll;
     private RecyclerView mRecyclerView;
 
@@ -48,10 +56,8 @@ public class MapViewFragment extends Fragment {
         // Open map fragment
         activity.getSupportFragmentManager().beginTransaction().replace(R.id.map, fragment).commit();
 
-        // Wire components
-        mRecyclerView = rootView.findViewById(R.id.tasks_for_map_recycler);
-
         // Setup Recycler View
+        mRecyclerView = rootView.findViewById(R.id.tasks_for_map_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(activity,
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -83,6 +89,29 @@ public class MapViewFragment extends Fragment {
             }
         });
 
+        // Setup filter tasks button
+        mFilterDistance = rootView.findViewById(R.id.dist_filter_edit);
+        mFilterButton = rootView.findViewById(R.id.dist_filter_button);
+        mFilterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get the filter distance from the edit text field
+                final double maxDist;
+                try {
+                    maxDist = Double.parseDouble(mFilterButton.getText().toString());
+                }
+                catch (NumberFormatException e) {
+                    // Let the user know if they didn't enter something right
+                    Toast.makeText(getContext(), "Enter a number for maximum distance",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                final List<Task> filteredTasks = findTasksWithinDistance(fragment, tasks, maxDist);
+            }
+        });
+
+
         return rootView;
     }
 
@@ -108,4 +137,46 @@ public class MapViewFragment extends Fragment {
         }
         return tasks;
     }
+
+    private List<Task> findTasksWithinDistance(final MapFragment mapFragment,
+                                               final List<Task> tasks, final double maxDist) {
+        // Return all tasks which are within maxDistance miles of the current location
+        final List<Task> filteredTasks = new ArrayList<>();
+
+        // Get current location and use it to filter tasks
+        final Consumer<Location> applyFilter = location -> {
+            final LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            for (final Task task : tasks) {
+                final LatLng taskLocation = new LatLng(task.getAddress().getLatitude(),
+                        task.getAddress().getLongitude());
+                if (getHaversineDistance(userLocation, taskLocation) < maxDist) {
+                    filteredTasks.add(task);
+                }
+            }
+        };
+        final Runnable informUserOfLocationFailure = () -> {
+            Toast.makeText(getContext(), "Unable to load user location",
+                    Toast.LENGTH_SHORT).show();
+        };
+        // Apply the filter using the found location
+        mapFragment.operateOnLocation(getActivity(), applyFilter, informUserOfLocationFailure);
+
+        return filteredTasks;
+    }
+
+    private double getHaversineDistance(final LatLng posn1, final LatLng posn2) {
+        // Return distance in miles between two LatLngs
+        // ref: https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
+
+        final double rEarth = 3558.8; // radius of Earth in miles
+        final double lat1 = posn1.latitude * Math.PI / 180.0;
+        final double lat2 = posn2.latitude * Math.PI / 180.0;
+        final double latDiff = lat2 - lat1;
+        final double long1 = posn1.longitude * Math.PI / 180.0;
+        final double long2 = posn2.longitude * Math.PI / 180.0;
+        final double longDiff = long2 - long1;
+        return 2 * rEarth * Math.asin(Math.sqrt(Math.sin(latDiff / 2) * Math.sin(latDiff / 2) + Math.cos(lat1)
+        * Math.cos(lat2) * Math.sin(longDiff / 2) * Math.sin(longDiff / 2)));
+    }
+
 }

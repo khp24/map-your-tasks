@@ -4,7 +4,11 @@
     <string name="call_explicit_intent">Sign Out</string>
     <string name="add_task">Add Task</string>
     <string name="to_map">Open Map</string>
+
+    <!-- Map View Strings -->
     <string name="select_all_option">(Select all)</string>
+    <string name="dist_filter_header">Max Distance (miles)</string>
+    <string name="dist_filter_button">Filter Tasks</string>
 
     <!--Add Task View Strings-->
     <string name="add_task_name">Name:</string>
