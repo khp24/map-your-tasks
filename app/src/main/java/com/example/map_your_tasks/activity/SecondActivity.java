@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.AddListFragment;
 import com.example.map_your_tasks.fragments.MapViewFragment;
-import com.example.map_your_tasks.fragments.ProductListFragment;
+import com.example.map_your_tasks.fragments.TaskListFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -62,7 +62,7 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
 
         /** Step 7:Set the default fragment to the MapFragment */
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new ProductListFragment()).commit();
+                .replace(R.id.fragment_container, new TaskListFragment()).commit();
 
         firebaseAuth = FirebaseAuth.getInstance();
         googleSignInClient = GoogleSignIn.getClient(getApplicationContext(),  GoogleSignInOptions.DEFAULT_SIGN_IN);
@@ -74,7 +74,7 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
 
         switch (id) {
             case R.id.nav_product_list:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProductListFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TaskListFragment()).commit();
                 break;
             case R.id.nav_add_product:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddListFragment()).commit();

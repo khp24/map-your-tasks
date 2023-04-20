@@ -17,6 +17,8 @@ public class Task implements Parcelable {
     private LocalDateTime dueDate;
     private Address address;
 
+    public Task() {}
+
     public Task(boolean isComplete, String name, String description, LocalDateTime dueDate, Address address) {
         this.isComplete = isComplete;
         this.name = name;
