@@ -4,6 +4,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,7 @@ public class MapViewFragment extends Fragment {
                 // Get the filter distance from the edit text field
                 final double maxDist;
                 try {
-                    maxDist = Double.parseDouble(mFilterButton.getText().toString());
+                    maxDist = Double.parseDouble(mFilterDistance.getText().toString());
                 }
                 catch (NumberFormatException e) {
                     // Let the user know if they didn't enter something right
@@ -107,7 +108,7 @@ public class MapViewFragment extends Fragment {
                     return;
                 }
 
-                final List<Task> filteredTasks = findTasksWithinDistance(fragment, tasks, maxDist);
+                filterTasksWithinDistance(fragment, mRecyclerView, tasks, maxDist);
             }
         });
 
@@ -120,25 +121,35 @@ public class MapViewFragment extends Fragment {
         final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         final List<Task> tasks = new ArrayList<>();
         try {
-            final List<Address> address1 = geocoder.getFromLocationName(
-                    "30 East Swedesford Rd, Malvern, PA 19355", 1);
+            final Address add1 = new Address(Locale.getDefault());
+            add1.setAddressLine(0, "Address1");
+            add1.setLatitude(40.1);
+            add1.setLongitude(-75.5);
+
+            final Address add2 = new Address(Locale.getDefault());
+            add2.setAddressLine(0, "Address1");
+            add2.setLatitude(40.5);
+            add2.setLongitude(-75.3);
+
+            final Address add3 = new Address(Locale.getDefault());
+            add3.setAddressLine(0, "Address1");
+            add3.setLatitude(40.3);
+            add3.setLongitude(-75.1);
+
             tasks.add(new Task(false, "Task1", "Do Task1", null,
-                    address1.get(0).getLatitude(), address1.get(0).getLongitude(), address1.get(0).getAddressLine(0)));
-            final List<Address> address2 = geocoder.getFromLocationName(
-                    "52 W Lancaster Ave, Paoli, PA 19301", 1);
+                    add1));
             tasks.add(new Task(false, "Task2", "Do Task2", null,
-                    address2.get(0).getLatitude(), address2.get(0).getLongitude(), address2.get(0).getAddressLine(0)));
-            final List<Address> address3 = geocoder.getFromLocationName(
-                    "550 E Lancaster Ave Ste C, St Davids, PA 19087", 1);
+                    add2));
             tasks.add(new Task(false, "Task3", "Do Task3", null,
-                    address3.get(0).getLatitude(), address3.get(0).getLongitude(), address3.get(0).getAddressLine(0)));
+                    add3));
         } catch (Exception e) {
             return null;
         }
         return tasks;
     }
 
-    private List<Task> findTasksWithinDistance(final MapFragment mapFragment,
+    private void filterTasksWithinDistance(final MapFragment mapFragment,
+                                               final RecyclerView mRecyclerView,
                                                final List<Task> tasks, final double maxDist) {
         // Return all tasks which are within maxDistance miles of the current location
         final List<Task> filteredTasks = new ArrayList<>();
@@ -149,19 +160,25 @@ public class MapViewFragment extends Fragment {
             for (final Task task : tasks) {
                 final LatLng taskLocation = new LatLng(task.getAddress().getLatitude(),
                         task.getAddress().getLongitude());
+                // Add this task to the filtered list if its distance to the user is less than the max
                 if (getHaversineDistance(userLocation, taskLocation) < maxDist) {
                     filteredTasks.add(task);
                 }
             }
+            // Make sure to remove all markers from the map created by the old adapter
+            mapFragment.removeAllTasks();
+
+            // Once the tasks have been filtered, make a new adapter and bind it to the recycler view
+            final MapTaskAdapter updatedAdapter = new MapTaskAdapter(filteredTasks, mapFragment);
+            mRecyclerView.setAdapter(updatedAdapter);
         };
         final Runnable informUserOfLocationFailure = () -> {
             Toast.makeText(getContext(), "Unable to load user location",
                     Toast.LENGTH_SHORT).show();
         };
-        // Apply the filter using the found location
-        mapFragment.operateOnLocation(getActivity(), applyFilter, informUserOfLocationFailure);
 
-        return filteredTasks;
+        // Apply the filter using the user's location
+        mapFragment.operateOnLocation(getActivity(), applyFilter, informUserOfLocationFailure);
     }
 
     private double getHaversineDistance(final LatLng posn1, final LatLng posn2) {

@@ -131,6 +131,14 @@ public class MapFragment extends Fragment {
                 taskEntry.getValue().setVisible(false);
             }
         };
+        operateOnMap(operation);
+    }
+
+    public void removeAllTasks() {
+        final Consumer<GoogleMap> operation = googleMap -> {
+            googleMap.clear();
+        };
+        operateOnMap(operation);
     }
 
     /**
