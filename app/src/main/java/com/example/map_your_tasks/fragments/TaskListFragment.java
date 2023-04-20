@@ -17,8 +17,8 @@ import com.example.map_your_tasks.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.List;
 public class TaskListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private DatabaseReference firebaseDatabase;
     private FirebaseAuth firebaseAuth;
     private TaskAdapter mTaskAdapter;
 
@@ -42,8 +41,9 @@ public class TaskListFragment extends Fragment {
         String uid = firebaseAuth.getUid();
         Log.d("uid", uid);
 
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference("tasks").child(uid);
-        firebaseDatabase.addValueEventListener(new ValueEventListener() {
+        Query firebaseQuery = FirebaseDatabase.getInstance().getReference("tasks")
+                .child(uid).orderByChild("complete");
+        firebaseQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Task> taskList = new ArrayList<>();
