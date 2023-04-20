@@ -91,18 +91,27 @@ public class MapViewFragment extends Fragment {
         final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         final List<Task> tasks = new ArrayList<>();
         try {
-            final List<Address> address1 = geocoder.getFromLocationName(
-                    "30 East Swedesford Rd, Malvern, PA 19355", 1);
+            final Address add1 = new Address(Locale.getDefault());
+            add1.setAddressLine(0, "Address1");
+            add1.setLatitude(40.1);
+            add1.setLongitude(-75.5);
+
+            final Address add2 = new Address(Locale.getDefault());
+            add2.setAddressLine(0, "Address1");
+            add2.setLatitude(40.5);
+            add2.setLongitude(-75.3);
+
+            final Address add3 = new Address(Locale.getDefault());
+            add3.setAddressLine(0, "Address1");
+            add3.setLatitude(40.3);
+            add3.setLongitude(-75.1);
+
             tasks.add(new Task(false, "Task1", "Do Task1", null,
-                    address1.get(0)));
-            final List<Address> address2 = geocoder.getFromLocationName(
-                    "52 W Lancaster Ave, Paoli, PA 19301", 1);
+                    add1));
             tasks.add(new Task(false, "Task2", "Do Task2", null,
-                    address2.get(0)));
-            final List<Address> address3 = geocoder.getFromLocationName(
-                    "550 E Lancaster Ave Ste C, St Davids, PA 19087", 1);
+                    add2));
             tasks.add(new Task(false, "Task3", "Do Task3", null,
-                    address3.get(0)));
+                    add3));
         } catch (Exception e) {
             return null;
         }
