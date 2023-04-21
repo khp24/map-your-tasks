@@ -41,7 +41,7 @@ public class MapTaskAdapter extends RecyclerView.Adapter<MapTaskAdapter.TaskView
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         final Task task = tasks.get(position);
         holder.mNameView.setText(task.getName());
-        holder.mAddressView.setText(task.getAddressString());
+        holder.mAddressView.setText(task.getAddress());
 
         holder.mSelectBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
