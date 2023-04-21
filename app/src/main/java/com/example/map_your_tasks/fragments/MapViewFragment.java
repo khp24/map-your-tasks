@@ -124,27 +124,12 @@ public class MapViewFragment extends Fragment {
         final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         final List<Task> tasks = new ArrayList<>();
         try {
-            final Address add1 = new Address(Locale.getDefault());
-            add1.setAddressLine(0, "Address1");
-            add1.setLatitude(40.1);
-            add1.setLongitude(-75.5);
-
-            final Address add2 = new Address(Locale.getDefault());
-            add2.setAddressLine(0, "Address1");
-            add2.setLatitude(40.5);
-            add2.setLongitude(-75.3);
-
-            final Address add3 = new Address(Locale.getDefault());
-            add3.setAddressLine(0, "Address1");
-            add3.setLatitude(40.3);
-            add3.setLongitude(-75.1);
-
             tasks.add(new Task(false, "Task1", "Do Task1", null,
-                    add1));
+                    40.1, -75.5, "Address1"));
             tasks.add(new Task(false, "Task2", "Do Task2", null,
-                    add2));
+                    40.5, -75.3, "Address2"));
             tasks.add(new Task(false, "Task3", "Do Task3", null,
-                    add3));
+                    40.3, -75.1, "Address3"));
         } catch (Exception e) {
             return null;
         }
@@ -163,8 +148,8 @@ public class MapViewFragment extends Fragment {
         final Consumer<Location> applyFilter = location -> {
             final LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
             for (final Task task : tasks) {
-                final LatLng taskLocation = new LatLng(task.getAddress().getLatitude(),
-                        task.getAddress().getLongitude());
+                final LatLng taskLocation = new LatLng(task.getLatitude(),
+                        task.getLongitude());
                 // Add this task to the filtered list if its distance to the user is less than the max
                 if (getHaversineDistance(userLocation, taskLocation) < maxDist) {
                     closeTasks.add(task);
