@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.map_your_tasks.Model.TaskAdapter;
 import com.example.map_your_tasks.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.example.map_your_tasks.Model.Task;
+
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +47,13 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
     private EditText mEditDate;
     private EditText mEditTime;
     private Calendar calendar;
-    //private DatabaseReference firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+
+    private DatabaseReference firebaseDatabase;
+
+    private TaskAdapter mTaskAdapter;
+
+    private Button confirmButton;
 
     @Nullable
     @Override
@@ -69,6 +81,13 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         // Set up editTime
         mEditTime = rootView.findViewById(R.id.add_task_time);
         mEditTime.setOnClickListener(this);
+
+
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        confirmButton = rootView.findViewById(R.id.button_confirm);
+        confirmButton.setOnClickListener(this);
 
         return rootView;
     }
@@ -156,6 +175,30 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 12, 0, true).show();
     }
 
+    public void confirm() {
+
+
+        String name = mEditName.getText().toString().trim();
+        String description = mEditDescription.getText().toString().trim();
+        LocalDateTime dueDate = LocalDateTime.now();
+        //String addressString = mEditAddress.getText().toString().trim();
+        //Address address = new Address(Locale.getDefault());
+        //Locale locale = new Locale(addressString);
+        //Address address = new Address(locale);
+
+        if (name.isEmpty() || description.isEmpty()) {
+            Toast.makeText(getContext(), "Please fill task name and description", Toast.LENGTH_SHORT).show();
+        } else {
+            String uid = firebaseAuth.getUid();
+            firebaseDatabase = FirebaseDatabase.getInstance().getReference("tasks").child(uid);
+            String taskID = firebaseDatabase.push().getKey();
+            Task  newTask = new Task(  false,  name,  description, dueDate,  address);
+            firebaseDatabase.child(taskID).setValue(newTask);
+            Toast.makeText(getContext(), "New Task added", Toast.LENGTH_SHORT).show();
+            //clearFields();
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -167,6 +210,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.add_task_time:
                 setupTimePicker();
+                break;
+            case R.id.button_confirm:
+                confirm();
                 break;
             default:
                 break;
