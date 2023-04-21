@@ -63,7 +63,10 @@ public class MapViewFragment extends Fragment {
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         final List<Task> tasks = createTestTasks();
-        final MapTaskAdapter adapter = new MapTaskAdapter(tasks, fragment);
+        // Pass a copy of the tasks list into the adapter, we don't want operations on the adapter
+        // to modify the original list
+        final List<Task> copiedTasks = new ArrayList<>(tasks);
+        final MapTaskAdapter adapter = new MapTaskAdapter(copiedTasks, fragment);
         mRecyclerView.setAdapter(adapter);
 
         // Setup checkAll box, it will change visibility of all markers on the map and change
@@ -151,8 +154,10 @@ public class MapViewFragment extends Fragment {
     private void filterTasksWithinDistance(final MapFragment mapFragment,
                                                final RecyclerView mRecyclerView,
                                                final List<Task> tasks, final double maxDist) {
-        // Return all tasks which are within maxDistance miles of the current location
-        final List<Task> filteredTasks = new ArrayList<>();
+        // Store all tasks which are within maxDistance miles of the current location
+        final List<Task> closeTasks = new ArrayList<>();
+        // Store all tasks which are farther than maxDistance miles of the current location
+        final List<Task> farTasks = new ArrayList<>();
 
         // Get current location and use it to filter tasks
         final Consumer<Location> applyFilter = location -> {
@@ -162,15 +167,24 @@ public class MapViewFragment extends Fragment {
                         task.getAddress().getLongitude());
                 // Add this task to the filtered list if its distance to the user is less than the max
                 if (getHaversineDistance(userLocation, taskLocation) < maxDist) {
-                    filteredTasks.add(task);
+                    closeTasks.add(task);
+                }
+                else {
+                    farTasks.add(task);
                 }
             }
-            // Make sure to remove all markers from the map created by the old adapter
-            mapFragment.removeAllTasks();
 
-            // Once the tasks have been filtered, make a new adapter and bind it to the recycler view
-            final MapTaskAdapter updatedAdapter = new MapTaskAdapter(filteredTasks, mapFragment);
-            mRecyclerView.setAdapter(updatedAdapter);
+            final MapTaskAdapter currentAdapter = (MapTaskAdapter) mRecyclerView.getAdapter();
+            // Need to make sure any close tasks are present in the recycler view
+            currentAdapter.ensureAllTasksArePresent(closeTasks);
+            // Need to make sure any far tasks are absent in the recycler view
+            currentAdapter.ensureAllTasksAreAbsent(farTasks);
+
+            // Design decision, selecting this button will also remove all markers and de-select
+            // all checkboxes. Preserving the state would require a lot of potentially fragile code
+            // Ideally the user only uses this button a few times
+            mapFragment.makeAllTasksInvisible();
+            mCheckAll.setChecked(false);
         };
         final Runnable informUserOfLocationFailure = () -> {
             Toast.makeText(getContext(), "Unable to load user location",

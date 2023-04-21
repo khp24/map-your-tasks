@@ -134,13 +134,6 @@ public class MapFragment extends Fragment {
         operateOnMap(operation);
     }
 
-    public void removeAllTasks() {
-        final Consumer<GoogleMap> operation = googleMap -> {
-            googleMap.clear();
-        };
-        operateOnMap(operation);
-    }
-
     /**
      * We can't guarantee the the map is loaded when accessing this fragment.
      * Use this method to operate on the map as it will add a callback for when
