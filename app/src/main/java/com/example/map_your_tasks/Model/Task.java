@@ -14,16 +14,20 @@ public class Task implements Parcelable {
     private boolean isComplete;
     private String name;
     private String description;
-    private LocalDateTime dueDate;
-    private Address address;
+    private String dueDate;
+    private double latitude;
+    private double longitude;
+    private String address;
 
     public Task() {}
 
-    public Task(boolean isComplete, String name, String description, LocalDateTime dueDate, Address address) {
+    public Task(boolean isComplete, String name, String description, String dueDate, double latitude, double longitude, String address) {
         this.isComplete = isComplete;
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.address = address;
     }
 
@@ -31,8 +35,10 @@ public class Task implements Parcelable {
         isComplete = in.readByte() != 0;
         name = in.readString();
         description = in.readString();
-        dueDate = (LocalDateTime) in.readSerializable();
-        address = in.readParcelable(Address.class.getClassLoader());
+        dueDate = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        address = in.readString();
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>() {
@@ -71,28 +77,36 @@ public class Task implements Parcelable {
         this.description = description;
     }
 
-    public LocalDateTime getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDateTime dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 
-    public Address getAddress() {
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getAddressString() {
-        final StringBuilder addressTextBuilder = new StringBuilder();
-        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-            addressTextBuilder.append(address.getAddressLine(i));
-        }
-        return addressTextBuilder.toString();
     }
 
     @Override
@@ -105,24 +119,28 @@ public class Task implements Parcelable {
         parcel.writeByte((byte) (isComplete ? 1 : 0));
         parcel.writeString(name);
         parcel.writeString(description);
-        parcel.writeSerializable(dueDate);
-        parcel.writeParcelable(address, i);
+        parcel.writeString(dueDate);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
+        parcel.writeString(address);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Task)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return isComplete == task.isComplete
-                && Objects.equals(name, task.name)
-                && Objects.equals(description, task.description)
-                && Objects.equals(dueDate, task.dueDate)
-                && Objects.equals(address, task.address);
+        return isComplete == task.isComplete &&
+                Double.compare(task.latitude, latitude) == 0 &&
+                Double.compare(task.longitude, longitude) == 0 &&
+                Objects.equals(name, task.name) &&
+                Objects.equals(description, task.description) &&
+                Objects.equals(dueDate, task.dueDate) &&
+                Objects.equals(address, task.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(isComplete, name, description, dueDate, address);
+        return Objects.hash(isComplete, name, description, dueDate, latitude, longitude, address);
     }
 }

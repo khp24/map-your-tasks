@@ -94,15 +94,15 @@ public class MapViewFragment extends Fragment {
             final List<Address> address1 = geocoder.getFromLocationName(
                     "30 East Swedesford Rd, Malvern, PA 19355", 1);
             tasks.add(new Task(false, "Task1", "Do Task1", null,
-                    address1.get(0)));
+                    address1.get(0).getLatitude(), address1.get(0).getLongitude(), address1.get(0).getAddressLine(0)));
             final List<Address> address2 = geocoder.getFromLocationName(
                     "52 W Lancaster Ave, Paoli, PA 19301", 1);
             tasks.add(new Task(false, "Task2", "Do Task2", null,
-                    address2.get(0)));
+                    address2.get(0).getLatitude(), address2.get(0).getLongitude(), address2.get(0).getAddressLine(0)));
             final List<Address> address3 = geocoder.getFromLocationName(
                     "550 E Lancaster Ave Ste C, St Davids, PA 19087", 1);
             tasks.add(new Task(false, "Task3", "Do Task3", null,
-                    address3.get(0)));
+                    address3.get(0).getLatitude(), address3.get(0).getLongitude(), address3.get(0).getAddressLine(0)));
         } catch (Exception e) {
             return null;
         }
