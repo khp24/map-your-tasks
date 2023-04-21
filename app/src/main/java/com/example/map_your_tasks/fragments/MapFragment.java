@@ -134,8 +134,8 @@ public class MapFragment extends Fragment {
                 }
                 // If this marker hasn't been created yet, create it (will be visible by default)
                 else {
-                    final LatLng posn = new LatLng(task.getAddress().getLatitude(),
-                            task.getAddress().getLongitude());
+                    final LatLng posn = new LatLng(task.getLatitude(),
+                            task.getLongitude());
                     final Marker marker = googleMap.addMarker(
                             new MarkerOptions().position(posn).title(task.getName()));
                     markersByTask.put(task, marker);
