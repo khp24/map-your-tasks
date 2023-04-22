@@ -23,17 +23,26 @@
             android:textSize="20sp"/>
 
         <TextView
-            android:id="@+id/task_description"
+            android:id="@+id/task_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/task_name"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/task_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/task_date"
+            android:layout_alignParentRight="true"
+            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/task_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/task_description"
+            android:layout_below="@+id/task_name"
             android:textSize="12sp"/>
 
     </RelativeLayout>
