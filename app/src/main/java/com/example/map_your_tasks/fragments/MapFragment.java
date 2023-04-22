@@ -60,43 +60,22 @@ public class MapFragment extends Fragment {
 
     public void addUserLocation(final Activity activity) {
 
-        final FusedLocationProviderClient locationClient =
-                LocationServices.getFusedLocationProviderClient(activity);
+        final Consumer<Location> addLocationToMap = location -> {
+            // Create the icon for the user
+            final Bitmap userLocation = convertDrawableToBitmap(R.drawable.user_location);
+            final BitmapDescriptor descriptor = BitmapDescriptorFactory.fromBitmap(userLocation);
 
-        // Check for permission to access location
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    0);
-        } else {
-            // Permission is already granted, proceed with app logic
-        }
-
-        // This object is created from the parent activity and we can use it to load the user's location
-        locationClient.getLastLocation()
-                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-
-                            // Create the icon for the user
-                            final Bitmap userLocation = convertDrawableToBitmap(R.drawable.user_location);
-                            final BitmapDescriptor descriptor = BitmapDescriptorFactory.fromBitmap(userLocation);
-
-                            // Add it to the map
-                            final LatLng latLng = new LatLng(location.getLatitude(),
-                                    location.getLongitude());
-                            operateOnMap(map -> {
-                                map.addMarker(new MarkerOptions().position(latLng)
-                                        .icon(descriptor).title("You!"));
-                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,8));
-                            });
-                        }
-                    }
-                });
+            // Add it to the map
+            final LatLng latLng = new LatLng(location.getLatitude(),
+                    location.getLongitude());
+            operateOnMap(map -> {
+                map.addMarker(new MarkerOptions().position(latLng)
+                        .icon(descriptor).title("You!"));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 8));
+            });
+        };
+        // Add location to map, don't need any error on a failure, your location just won't load
+        operateOnLocation(activity, addLocationToMap, () -> {});
     }
 
     /**
@@ -152,6 +131,7 @@ public class MapFragment extends Fragment {
                 taskEntry.getValue().setVisible(false);
             }
         };
+        operateOnMap(operation);
     }
 
     /**
@@ -179,5 +159,41 @@ public class MapFragment extends Fragment {
                 operation.accept(googleMap);
             }
         });
+    }
+
+    /**
+     * Loading the last known location has to be done async, so use this method to do it
+     * @param activity the parent activity
+     * @param operation consumer for the location to perform once loaded
+     * @param onFailure operation to run if the found location is null
+     */
+    public void operateOnLocation(final Activity activity, final Consumer<Location> operation,
+                                   final Runnable onFailure) {
+
+        final FusedLocationProviderClient locationClient =
+                LocationServices.getFusedLocationProviderClient(activity);
+
+        // Check for permission to access location
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    0);
+        } else {
+            // Permission is already granted, proceed with logic
+        }
+
+        // This object is created from the parent activity and we can use it to load the user's location
+        locationClient.getLastLocation()
+                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            operation.accept(location);
+                        }
+                    }
+                });
     }
 }
