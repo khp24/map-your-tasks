@@ -17,6 +17,7 @@ import java.util.Objects;
 
 public class Task implements Parcelable {
 
+    private String id;
     private boolean isComplete;
     private String name;
     private String description;
@@ -27,7 +28,8 @@ public class Task implements Parcelable {
 
     public Task() {}
 
-    public Task(boolean isComplete, String name, String description, String dueDate, double latitude, double longitude, String address) {
+    public Task(String id, boolean isComplete, String name, String description, String dueDate, double latitude, double longitude, String address) {
+        this.id = id;
         this.isComplete = isComplete;
         this.name = name;
         this.description = description;
@@ -38,6 +40,7 @@ public class Task implements Parcelable {
     }
 
     protected Task(Parcel in) {
+        id = in.readString();
         isComplete = in.readByte() != 0;
         name = in.readString();
         description = in.readString();
@@ -58,6 +61,14 @@ public class Task implements Parcelable {
             return new Task[i];
         }
     };
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public boolean isComplete() {
         return isComplete;

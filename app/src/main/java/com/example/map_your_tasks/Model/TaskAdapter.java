@@ -4,15 +4,21 @@ import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.map_your_tasks.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,9 +29,13 @@ import java.util.List;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
     private List<Task> mTasks;
+    private DatabaseReference mDatabaseReference;
+    private FirebaseAuth mFirebaseAuth;
 
     public TaskAdapter(List<Task> mTasks) {
         this.mTasks = mTasks;
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("tasks").child(mFirebaseAuth.getUid());
     }
 
     @NonNull
@@ -40,6 +50,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskAdapter.TaskViewHolder holder, int position) {
         Task task = mTasks.get(position);
         holder.bind(task);
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopupMenu(v, task);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -86,5 +103,62 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             }
         }
 
+    }
+
+    private void showPopupMenu(View view, Task task) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+        popupMenu.setGravity(Gravity.END);
+
+        if(task.isComplete()== false){
+            // Set the custom layout
+            popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+            // Set click listeners for each option
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(android.view.MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.popup_menu_complete:
+                            task.setComplete(true);
+                            mDatabaseReference.child(task.getId()).setValue(task);
+                            Toast.makeText(view.getContext(), "Task completed", Toast.LENGTH_SHORT).show();
+                            break;
+                        case R.id.popup_menu_update:
+                            //TODO: Add Update
+                            Toast.makeText(view.getContext(), "Update Task", Toast.LENGTH_SHORT).show();
+                            break;
+                        case R.id.popup_menu_delete:
+                            mDatabaseReference.child(task.getId()).removeValue();
+                            Toast.makeText(view.getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    return true;
+                }
+            });
+        }else{
+            // Set the custom layout
+            popupMenu.getMenuInflater().inflate(R.menu.popup_menu_completed, popupMenu.getMenu());
+
+            // Set click listeners for each option
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(android.view.MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.popup_menu_undo:
+                            task.setComplete(false);
+                            mDatabaseReference.child(task.getId()).setValue(task);
+                            Toast.makeText(view.getContext(), "Undo completion", Toast.LENGTH_SHORT).show();
+                            break;
+                        case R.id.popup_menu_delete2:
+                            mDatabaseReference.child(task.getId()).removeValue();
+                            Toast.makeText(view.getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                    return true;
+                }
+            });
+        }
+
+        popupMenu.show();
     }
 }
