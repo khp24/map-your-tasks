@@ -49,6 +49,7 @@ public class TaskListFragment extends Fragment {
                 List<Task> taskList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Task task = dataSnapshot.getValue(Task.class);
+                    task.setId(dataSnapshot.getKey());
                     taskList.add(task);
                 }
                 mTaskAdapter = new TaskAdapter(taskList);

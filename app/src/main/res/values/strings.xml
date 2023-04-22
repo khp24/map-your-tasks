@@ -26,6 +26,7 @@
     <string name="popup_menu_complete">Complete</string>
     <string name="popup_menu_update">Update</string>
     <string name="popup_menu_delete">Delete</string>
+    <string name="popup_menu_undo">Undo Completion</string>
 
     <string-array name="task_options">
         <item>Update</item>

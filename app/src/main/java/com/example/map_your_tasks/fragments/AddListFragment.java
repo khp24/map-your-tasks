@@ -223,7 +223,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
             String uid = firebaseAuth.getUid();
             firebaseDatabase = FirebaseDatabase.getInstance().getReference("tasks").child(uid);
             String taskID = firebaseDatabase.push().getKey();
-            Task  newTask = new Task(  false,  name,  description, formattedDate, longitude, latitude, confirmedAddString);
+            Task  newTask = new Task(  taskID,false,  name,  description, formattedDate, longitude, latitude, confirmedAddString);
             firebaseDatabase.child(taskID).setValue(newTask);
             Toast.makeText(getContext(), "New Task added", Toast.LENGTH_SHORT).show();
             clearFields();
