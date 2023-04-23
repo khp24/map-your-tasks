@@ -75,22 +75,6 @@ public class MapViewFragment extends Fragment {
         return rootView;
     }
 
-    private List<Task> createTestTasks() {
-        final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-        final List<Task> tasks = new ArrayList<>();
-        try {
-            tasks.add(new Task("id1", false, "Task1", "Do Task1", null,
-                    40.1, -75.5, "Address1"));
-            tasks.add(new Task("id2", false, "Task2", "Do Task2", null,
-                    40.5, -75.3, "Address2"));
-            tasks.add(new Task("id3", false, "Task3", "Do Task3", null,
-                    40.3, -75.1, "Address3"));
-        } catch (Exception e) {
-            return null;
-        }
-        return tasks;
-    }
-
     private void loadTasksAndFragment(final View rootView, final MapFragment fragment) {
         final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         final String uid = firebaseAuth.getUid();
