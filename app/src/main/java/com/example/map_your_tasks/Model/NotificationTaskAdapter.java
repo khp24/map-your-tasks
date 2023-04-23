@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,10 @@ import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.NotificationFragment;
 import com.example.map_your_tasks.notification.NotificationPublisher;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +91,13 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
         public void bind(Task task, Activity activity, Context context,
                          NotificationManagerCompat notificationManager, Integer taskId) {
 
+            // Find the due date of the task
+            final Date dueDate = parseDueDate(context, task.getDueDate());
+            if (dueDate == null) {
+                // Stop everything if we can't parse the date
+                return;
+            }
+
             // Get permission to send notifications
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -99,6 +111,8 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             mNameTextView.setText(task.getName());
             mTimeTextView.setText(task.getDueDate());
 
+            // When initializing the button, check if there is a notification currently active
+            // for this task
             if (isNotificationActive(context, taskId)) {
                 mNotificationSetButton.setChecked(true);
                 mNotificationSetButton.setButtonDrawable(R.drawable.notification_on);
@@ -108,11 +122,12 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                 mNotificationSetButton.setButtonDrawable(R.drawable.notification_off);
             }
 
+            // Make the notification builder
             final NotificationCompat.Builder builder = new NotificationCompat.Builder(activity,
                      NotificationFragment.CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_map)
-                    .setContentTitle("Alert Title")
-                    .setContentText("This is an alert")
+                    .setSmallIcon(R.drawable.notification_on)
+                    .setContentTitle("Task Happening Now: " + task.getName())
+                    .setContentText(task.getDescription())
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             mNotificationSetButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -128,9 +143,15 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                         final PendingIntent pendingIntent = buildPendingIntent(context, taskId,
                                 notification);
 
-                        final long futureMillis = SystemClock.elapsedRealtime() + 10000L;
+                        long alarmDelay = SystemClock.elapsedRealtime() +
+                                dueDate.getTime() - System.currentTimeMillis();
+                        // If alarm is in the past, return without setting the intent
+                        if (alarmDelay < 0) {
+                            return;
+                        }
+
                         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureMillis, pendingIntent);
+                        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmDelay, pendingIntent);
                     }
                     else {
                         // Set the icon to let the user know that the notification is off
@@ -171,6 +192,25 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             // Using the no create flag, if the pending intent does not exist, null will be returned
             // So a non-null return means that the notification is already active
             return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_NO_CREATE) != null;
+        }
+
+        private Date parseDueDate(final Context context, final String dueDate) {
+            Date date;
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dueDate);
+            }
+            catch (ParseException e) {
+                // Continue on to the next format
+            }
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd").parse(dueDate);
+            }
+            catch(ParseException e) {
+                // Neither format worked, let the user know
+                Toast.makeText(context, "Unable to parse due date of task",
+                        Toast.LENGTH_SHORT).show();
+                return null;
+            }
         }
 
     }

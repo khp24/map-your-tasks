@@ -77,7 +77,8 @@ public class NotificationFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     final String key = dataSnapshot.getKey();
                     final Task task = dataSnapshot.getValue(Task.class);
-                    if (task.getDueDate() != null && !task.getDueDate().isEmpty()) {
+                    if (task.getDueDate() != null && !task.getDueDate().isEmpty() && !task.isComplete()) {
+                        // Only add tasks which have due dates and are not complete
                         taskList.add(task);
                     }
                     taskIdMap.put(task, key.hashCode());
