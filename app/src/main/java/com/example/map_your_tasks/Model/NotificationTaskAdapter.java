@@ -43,8 +43,6 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
     private Activity activity;
     private Context context;
     private NotificationManagerCompat notificationManager;
-    private Map<Task, Integer> taskIdMap;
-    private Map<Task, PendingIntent> currentlyRunningNotifications;
 
     public NotificationTaskAdapter(List<Task> mTasks, Activity activity, Context context,
                                    Map<Task, Integer> taskIdMap) {
@@ -52,7 +50,6 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
         this.activity = activity;
         this.context = context;
         this.notificationManager = NotificationManagerCompat.from(activity);
-        this.taskIdMap = taskIdMap;
     }
 
     @NonNull
@@ -66,7 +63,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
     @Override
     public void onBindViewHolder(@NonNull NotificationTaskAdapter.TaskViewHolder holder, int position) {
         Task task = mTasks.get(position);
-        Integer taskId = taskIdMap.get(task);
+        Integer taskId = task.getId().hashCode();
         holder.bind(task, activity, context, notificationManager, taskId);
     }
 
@@ -157,18 +154,23 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                         // Set the icon to let the user know that the notification is off
                         mNotificationSetButton.setButtonDrawable(R.drawable.notification_off);
 
-                        final PendingIntent pendingIntent = buildPendingIntent(context, taskId, null);
-                        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.cancel(pendingIntent);
-                        // If this pendingIntent isn't cancelled, it will still be active and the
-                        // checkbox will be set to true when the user comes back to this fragment
-                        pendingIntent.cancel();
+                        cancelNotificationIfPresent(context, taskId);
                     }
                 }
             });
         }
 
-        private PendingIntent buildPendingIntent(final Context context, final int taskId,
+        public static void cancelNotificationIfPresent(Context context, int taskId) {
+            // Cancels the pending notification for a given taskId if it exists
+            final PendingIntent pendingIntent = buildPendingIntent(context, taskId, null);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+            // If this pendingIntent isn't cancelled, it will still be active and the
+            // checkbox will be set to true when the user comes back to this fragment
+            pendingIntent.cancel();
+        }
+
+        private static PendingIntent buildPendingIntent(final Context context, final int taskId,
                                                  final Notification notification) {
             // Since the AlarmManager has a cancel method which requires that you pass in the
             // PendingIntent, it is very important that the notification on and off methods
