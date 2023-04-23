@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.AddListFragment;
 import com.example.map_your_tasks.fragments.MapViewFragment;
+import com.example.map_your_tasks.fragments.NotificationFragment;
 import com.example.map_your_tasks.fragments.TaskListFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -78,6 +79,9 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_add_product:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddListFragment()).commit();
+                break;
+            case R.id.nav_notification:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new NotificationFragment()).commit();
                 break;
             case R.id.nav_map:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapViewFragment()).commit();
