@@ -5,6 +5,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.map_your_tasks.Model.Task;
+import com.example.map_your_tasks.Model.TaskAdapter;
 import com.example.map_your_tasks.R;
 
 import java.util.ArrayList;
@@ -31,6 +33,12 @@ import java.util.function.Consumer;
 
 import com.example.map_your_tasks.Model.MapTaskAdapter;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * This fragment describes the entire map view, it has a {@link MapFragment} as a subfragment
@@ -62,7 +70,59 @@ public class MapViewFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(activity,
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        final List<Task> tasks = createTestTasks();
+
+        loadTasksAndFragment(rootView, fragment);
+        return rootView;
+    }
+
+    private List<Task> createTestTasks() {
+        final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        final List<Task> tasks = new ArrayList<>();
+        try {
+            tasks.add(new Task("id1", false, "Task1", "Do Task1", null,
+                    40.1, -75.5, "Address1"));
+            tasks.add(new Task("id2", false, "Task2", "Do Task2", null,
+                    40.5, -75.3, "Address2"));
+            tasks.add(new Task("id3", false, "Task3", "Do Task3", null,
+                    40.3, -75.1, "Address3"));
+        } catch (Exception e) {
+            return null;
+        }
+        return tasks;
+    }
+
+    private void loadTasksAndFragment(final View rootView, final MapFragment fragment) {
+        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        final String uid = firebaseAuth.getUid();
+
+        final Query firebaseQuery = FirebaseDatabase.getInstance().getReference("tasks")
+                .child(uid).orderByChild("complete");
+
+        final List<Task> taskList = new ArrayList<>();
+        firebaseQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Task> taskList = new ArrayList<>();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Task task = dataSnapshot.getValue(Task.class);
+                    task.setId(dataSnapshot.getKey());
+                    if (task.getAddress() != null && !task.isComplete()) {
+                        taskList.add(task);
+                    }
+                }
+                // Do the rest of the fragment loading
+                loadFragment(rootView, fragment, taskList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Fragment_list", "Error retrieving countries from database", error.toException());
+            }
+        });
+    }
+
+    private void loadFragment(final View rootView, final MapFragment fragment,
+                              final List<Task> tasks) {
         // Pass a copy of the tasks list into the adapter, we don't want operations on the adapter
         // to modify the original list
         final List<Task> copiedTasks = new ArrayList<>(tasks);
@@ -114,26 +174,6 @@ public class MapViewFragment extends Fragment {
                 filterTasksWithinDistance(fragment, mRecyclerView, tasks, maxDist);
             }
         });
-
-
-        return rootView;
-    }
-
-    //TODO: Get this from the database or an intent, this is just test data
-    private List<Task> createTestTasks() {
-        final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-        final List<Task> tasks = new ArrayList<>();
-        try {
-            tasks.add(new Task(false, "Task1", "Do Task1", null,
-                    40.1, -75.5, "Address1"));
-            tasks.add(new Task(false, "Task2", "Do Task2", null,
-                    40.5, -75.3, "Address2"));
-            tasks.add(new Task(false, "Task3", "Do Task3", null,
-                    40.3, -75.1, "Address3"));
-        } catch (Exception e) {
-            return null;
-        }
-        return tasks;
     }
 
     private void filterTasksWithinDistance(final MapFragment mapFragment,
