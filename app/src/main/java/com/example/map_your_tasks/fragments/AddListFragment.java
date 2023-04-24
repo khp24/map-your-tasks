@@ -66,9 +66,14 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
     private Date confirmedDate;
     private Date confirmedTime;
+    private String taskId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Bundle args = getArguments();
+        taskId = null;
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
@@ -96,10 +101,28 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         firebaseAuth = FirebaseAuth.getInstance();
 
         confirmButton = rootView.findViewById(R.id.button_confirm);
+        confirmButton.setText(R.string.frag_button_confirm);
         confirmButton.setOnClickListener(this);
 
         clearButton = rootView.findViewById(R.id.button_clear);
+        clearButton.setVisibility(View.VISIBLE);
         clearButton.setOnClickListener(this);
+
+        if (args != null) {
+            Task editTask = args.getParcelable("task");
+            taskId = editTask.getId();
+            confirmButton.setText(R.string.frag_button_update);
+            clearButton.setVisibility(View.GONE);
+            mEditName.setText(editTask.getName());
+            mEditDescription.setText(editTask.getDescription());
+            mEditAddress.setText(editTask.getAddress());
+
+            calendar.setTime(editTask.getDate());
+            updateDateLabel();
+
+            Date taskTime = editTask.getTime();
+            updateTime(taskTime.getHours(), taskTime.getMinutes());
+        }
 
         return rootView;
     }
@@ -109,6 +132,15 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         String myFormat="MM/dd/yy";
         SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
         mEditDate.setText(dateFormat.format(calendar.getTime()));
+        confirmedDate = calendar.getTime();
+    }
+
+    private void updateTime(int hourOfDay, int minute) {
+        mEditTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        confirmedTime = calendar.getTime();
     }
 
     private void validateAddress() {
@@ -170,8 +202,6 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 calendar.set(Calendar.MONTH,month);
                 calendar.set(Calendar.DAY_OF_MONTH,day);
                 updateDateLabel();
-
-                confirmedDate = calendar.getTime();
             }
         };
         // Show the date picker
@@ -185,11 +215,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                mEditTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                confirmedTime = calendar.getTime();
+                updateTime(hourOfDay, minute);
             }
         };
         // Show the time picker
@@ -222,10 +248,19 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         } else {
             String uid = firebaseAuth.getUid();
             firebaseDatabase = FirebaseDatabase.getInstance().getReference("tasks").child(uid);
-            String taskID = firebaseDatabase.push().getKey();
-            Task  newTask = new Task(  taskID,false,  name,  description, formattedDate, latitude, longitude, confirmedAddString);
-            firebaseDatabase.child(taskID).setValue(newTask);
-            Toast.makeText(getContext(), "New Task added", Toast.LENGTH_SHORT).show();
+
+            String toastText;
+            String taskId;
+            if (this.taskId == null) {
+                toastText = "New Task added";
+                taskId = firebaseDatabase.push().getKey();
+            } else {
+                toastText = "Task Updated";
+                taskId = this.taskId;
+            }
+            Task  newTask = new Task(taskId,false,  name,  description, formattedDate, latitude, longitude, confirmedAddString);
+            firebaseDatabase.child(taskId).setValue(newTask);
+            Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
             clearFields();
         }
     }
