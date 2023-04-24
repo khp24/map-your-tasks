@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.example.map_your_tasks.Model.Task;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 import java.sql.Time;
@@ -115,13 +117,18 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
             clearButton.setVisibility(View.GONE);
             mEditName.setText(editTask.getName());
             mEditDescription.setText(editTask.getDescription());
-            mEditAddress.setText(editTask.getAddress());
-
-            calendar.setTime(editTask.getDate());
+            if(editTask.getAddress() != null){
+                mEditAddress.setText(editTask.getAddress());
+            }
+            if(editTask.getDate() != null){
+                calendar.setTime(editTask.getDate());
+            }
             updateDateLabel();
 
-            Date taskTime = editTask.getTime();
-            updateTime(taskTime.getHours(), taskTime.getMinutes());
+            if(editTask.getDate() != null){
+                Date taskTime = editTask.getTime();
+                updateTime(taskTime.getHours(), taskTime.getMinutes());
+            }
         }
 
         return rootView;
@@ -224,6 +231,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
     }
 
     public void confirm() {
+        Boolean update = false;
         String name = mEditName.getText().toString().trim();
         String description = mEditDescription.getText().toString().trim();
 
@@ -257,11 +265,18 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
             } else {
                 toastText = "Task Updated";
                 taskId = this.taskId;
+                update = true;
             }
             Task  newTask = new Task(taskId,false,  name,  description, formattedDate, latitude, longitude, confirmedAddString);
             firebaseDatabase.child(taskId).setValue(newTask);
             Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
             clearFields();
+
+            if(update == true) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container,new TaskListFragment()).commit();
+            }
         }
     }
 
