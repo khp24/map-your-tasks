@@ -31,16 +31,11 @@ import com.example.map_your_tasks.Model.Task;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.time.LocalDateTime;
 
 public class AddListFragment extends Fragment implements View.OnClickListener {
 
@@ -66,8 +61,8 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
     private double latitude;
     private String confirmedAddString;
 
-    private Date confirmedDate;
-    private Date confirmedTime;
+    private String confirmedDate;
+    private String confirmedTime;
     private String taskId;
 
     @Nullable
@@ -139,7 +134,8 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         String myFormat="MM/dd/yy";
         SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
         mEditDate.setText(dateFormat.format(calendar.getTime()));
-        confirmedDate = calendar.getTime();
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("YYYY-MM-dd", Locale.US);
+        confirmedDate = dateFormat2.format(calendar.getTime());
     }
 
     private void updateTime(int hourOfDay, int minute) {
@@ -147,7 +143,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
-        confirmedTime = calendar.getTime();
+        confirmedTime = String.format("%02d:%02d:00", hourOfDay, minute);
     }
 
     private void validateAddress() {
@@ -238,13 +234,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         String formattedDate = null;
 
         if ((confirmedDate != null) && (confirmedTime != null)) {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date datetime = new Date(confirmedDate.getTime() + confirmedTime.getTime());
-            formattedDate = df.format(datetime);
+            formattedDate = confirmedDate + " " + confirmedTime;;
         } else if((confirmedDate !=null)&&(confirmedTime == null)) {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            Date datetime = new Date(confirmedDate.getTime());
-            formattedDate = df.format(datetime);
+            formattedDate = confirmedDate;
         }else if((confirmedDate ==null)&&(confirmedTime != null)){
             Toast.makeText(getContext(), "Please Provide due date with time", Toast.LENGTH_SHORT).show();
         }else{
