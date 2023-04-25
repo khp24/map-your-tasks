@@ -205,7 +205,8 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
         if ((confirmedDate != null) && (confirmedTime != null)) {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date datetime = new Date(confirmedDate.getTime() + confirmedTime.getTime());
+            Date datetime = new Date(confirmedDate.getYear(), confirmedDate.getMonth(),
+                    confirmedDate.getDate(), confirmedTime.getHours(), confirmedTime.getMinutes(), 0);
             formattedDate = df.format(datetime);
         } else if((confirmedDate !=null)&&(confirmedTime == null)) {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

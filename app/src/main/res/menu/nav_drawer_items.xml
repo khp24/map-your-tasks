@@ -6,11 +6,18 @@
             android:icon="@drawable/ic_task"
             android:name="@string/nav_drawer_item_list"
             android:title="@string/nav_drawer_item_list" />
+
         <item
             android:id="@+id/nav_add_product"
             android:icon="@drawable/ic_assignment"
             android:name="@string/nav_drawer_item_add"
             android:title="@string/nav_drawer_item_add" />
+
+        <item
+            android:id="@+id/nav_notification"
+            android:icon="@drawable/notification_on"
+            android:name="@string/nav_drawer_notification"
+            android:title="@string/nav_drawer_notification" />
 
         <item
             android:id="@+id/nav_map"
