@@ -183,6 +183,10 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                 return;
             }
 
+            // There is a notification present for the task and the time has been updated
+            // First, cancel the old notification
+            cancelNotificationIfPresent(context, taskId);
+
             // Find the due date of the task
             final Date dueDate = parseDueDate(context, task.getDueDate());
             if (dueDate == null) {
