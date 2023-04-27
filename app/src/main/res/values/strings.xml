@@ -19,9 +19,13 @@
     <string name="add_task_time">Time:</string>
     <string name="frag_map">Map</string>
     <string name="nav_drawer_item_home">Map</string>
+    <string name="nav_drawer_notification">Notifications</string>
     <string name="nav_drawer_item_list">Tasks</string>
     <string name="nav_drawer_item_add">Add Task</string>
     <string name="log_out_string">Log Out</string>
+
+    <string name="notification_on">On</string>
+    <string name="notification_off">Off</string>
 
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>

@@ -157,6 +157,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                             break;
                         case R.id.popup_menu_delete:
                             mDatabaseReference.child(task.getId()).removeValue();
+                            // Make sure there's no pending notification for this task
+                            NotificationTaskAdapter.TaskViewHolder.cancelNotificationIfPresent(
+                                    view.getContext(), task.getId().hashCode());
                             Toast.makeText(view.getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
                             break;
                     }
