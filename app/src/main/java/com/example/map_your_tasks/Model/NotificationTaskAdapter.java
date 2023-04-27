@@ -72,7 +72,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
         return mTasks.size();
     }
 
-    static class TaskViewHolder extends RecyclerView.ViewHolder {
+    public static class TaskViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mNameTextView;
         private TextView mTimeTextView;
@@ -170,6 +170,52 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             pendingIntent.cancel();
         }
 
+        public static void updateNotificationIfPresent(Activity activity, Context context, Task task) {
+            // Updates a notification with the specified due date
+            // If there is no notification active for the taskId, does nothing
+            // If newDueDate is in the past, cancels any active notification
+            final int taskId = task.getId().hashCode();
+            final Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+            // With the NO_CREATE flag this will be null if no notification is currently active
+            final PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    context, taskId, notificationIntent, PendingIntent.FLAG_NO_CREATE);
+            if (pendingIntent == null) {
+                return;
+            }
+
+            // Find the due date of the task
+            final Date dueDate = parseDueDate(context, task.getDueDate());
+            if (dueDate == null) {
+                // Stop everything if we can't parse the date
+                return;
+            }
+
+            // Make the notification builder
+            final NotificationCompat.Builder builder = new NotificationCompat.Builder(activity,
+                    NotificationFragment.CHANNEL_ID)
+                    .setSmallIcon(R.drawable.notification_on)
+                    .setContentTitle("Task Happening Now: " + task.getName())
+                    .setContentText(task.getDescription())
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            // Set the notification
+            final Notification notification = builder.build();
+
+            final PendingIntent newPendingIntent = buildPendingIntent(context, taskId,
+                    notification);
+
+            final long timeDiff = dueDate.getTime() - System.currentTimeMillis();
+            // If alarm is in the past, return without setting the intent
+            if (timeDiff < 0) {
+                return;
+            }
+            long alarmDelay = SystemClock.elapsedRealtime() + timeDiff;
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmDelay, newPendingIntent);
+
+        }
+
         private static PendingIntent buildPendingIntent(final Context context, final int taskId,
                                                  final Notification notification) {
             // Since the AlarmManager has a cancel method which requires that you pass in the
@@ -196,7 +242,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_NO_CREATE) != null;
         }
 
-        private Date parseDueDate(final Context context, final String dueDate) {
+        private static Date parseDueDate(final Context context, final String dueDate) {
             Date date;
             try {
                 return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dueDate);
