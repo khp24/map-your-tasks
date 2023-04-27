@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +51,6 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseReference firebaseDatabase;
 
-    private TaskAdapter mTaskAdapter;
-
     private Button confirmButton;
     private Button clearButton;
 
@@ -97,6 +94,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
+        // Restore button visibility and add listeners
         confirmButton = rootView.findViewById(R.id.button_confirm);
         confirmButton.setText(R.string.frag_button_confirm);
         confirmButton.setOnClickListener(this);
@@ -105,25 +103,33 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         clearButton.setVisibility(View.VISIBLE);
         clearButton.setOnClickListener(this);
 
+        // Get task argument if it was passed
         if (args != null) {
             Task editTask = args.getParcelable("task");
+
+            // Get and populate task information on display
             taskId = editTask.getId();
             confirmButton.setText(R.string.frag_button_update);
-            clearButton.setVisibility(View.GONE);
             mEditName.setText(editTask.getName());
             mEditDescription.setText(editTask.getDescription());
             if(editTask.getAddress() != null){
                 mEditAddress.setText(editTask.getAddress());
             }
+
+            // Update calendar date and text
             if(editTask.getDate() != null){
                 calendar.setTime(editTask.getDate());
             }
             updateDateLabel();
 
+            // Update calendar time and text
             if(editTask.getDate() != null){
                 Date taskTime = editTask.getTime();
                 updateTime(taskTime.getHours(), taskTime.getMinutes());
             }
+
+            // Hide the clear button
+            clearButton.setVisibility(View.GONE);
         }
 
         return rootView;
