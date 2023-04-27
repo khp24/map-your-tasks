@@ -13,9 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.map_your_tasks.R;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -23,19 +25,40 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
+    public interface TaskAdapterListener {
+        // Listener for requests to update a task
+        public void onTaskUpdateClick(Task task);
+    }
+
+    private TaskAdapterListener listener;
     private List<Task> mTasks;
     private DatabaseReference mDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
 
-    public TaskAdapter(List<Task> mTasks) {
-        this.mTasks = mTasks;
+    public TaskAdapter() {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("tasks").child(mFirebaseAuth.getUid());
+        this.listener = null;
+        this.mTasks = new ArrayList<>();
+    }
+
+    public TaskAdapter(List<Task> mTasks) {
+        this();
+        this.mTasks = mTasks;
+    }
+
+    public List<Task> getTasks() {
+        return mTasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.mTasks = tasks;
     }
 
     @NonNull
@@ -62,6 +85,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @Override
     public int getItemCount() {
         return mTasks.size();
+    }
+
+    public void setTaskAdapterListener(TaskAdapterListener listener) {
+        this.listener = listener;
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -124,8 +151,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                             Toast.makeText(view.getContext(), "Task completed", Toast.LENGTH_SHORT).show();
                             break;
                         case R.id.popup_menu_update:
-                            //TODO: Add Update
-                            Toast.makeText(view.getContext(), "Update Task", Toast.LENGTH_SHORT).show();
+                            if (listener != null) {
+                                listener.onTaskUpdateClick(task);
+                            }
                             break;
                         case R.id.popup_menu_delete:
                             mDatabaseReference.child(task.getId()).removeValue();

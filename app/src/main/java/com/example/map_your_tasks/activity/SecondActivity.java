@@ -9,10 +9,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.map_your_tasks.Model.Task;
 import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.AddListFragment;
 import com.example.map_your_tasks.fragments.MapViewFragment;
@@ -117,5 +119,13 @@ public class SecondActivity extends AppCompatActivity implements NavigationView.
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mActionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void editTask(Task task) {
+        AddListFragment addListFragment = new AddListFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("task", task);
+        addListFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, addListFragment).commit();
     }
 }
