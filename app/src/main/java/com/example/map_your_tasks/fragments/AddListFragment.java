@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.map_your_tasks.Model.NotificationTaskAdapter;
 import com.example.map_your_tasks.Model.TaskAdapter;
 import com.example.map_your_tasks.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -275,6 +276,10 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container,new TaskListFragment()).commit();
             }
+
+            // Update the notification for this task, if one was already set
+            NotificationTaskAdapter.TaskViewHolder.updateNotificationIfPresent(getActivity(),
+                    getContext(), newTask);
         }
     }
 
