@@ -15,6 +15,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Load credentials.
+        def properties = new Properties()
+        file("../local.properties").withInputStream { properties.load(it) }
+        // Make the local Maps API key visible to the AndroidManifest
+        manifestPlaceholders = [ MAPS_API_KEY:"${properties.getProperty('MAPS_API_KEY')}"]
     }
 
     buildTypes {
