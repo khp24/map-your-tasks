@@ -166,6 +166,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         }else{
             // Set the custom layout
             popupMenu.getMenuInflater().inflate(R.menu.popup_menu_completed, popupMenu.getMenu());
+            if (Build.VERSION.SDK_INT >= 29) {
+                popupMenu.setForceShowIcon(true);
+            }
 
             // Set click listeners for each option
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
