@@ -133,7 +133,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         if(task.isComplete()== false){
             // Set the custom layout
             popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-            if (Build.VERSION.SDK_INT > 29) {
+            if (Build.VERSION.SDK_INT >= 29) {
                 popupMenu.setForceShowIcon(true);
             }
 
