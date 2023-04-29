@@ -14,7 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.map_your_tasks.Model.Task;
+import com.example.map_your_tasks.model.Task;
 import com.example.map_your_tasks.R;
 import com.example.map_your_tasks.fragments.AddListFragment;
 import com.example.map_your_tasks.fragments.MapViewFragment;

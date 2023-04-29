@@ -21,13 +21,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.example.map_your_tasks.Model.NotificationTaskAdapter;
-import com.example.map_your_tasks.Model.TaskAdapter;
+import com.example.map_your_tasks.model.NotificationTaskAdapter;
+import com.example.map_your_tasks.model.TaskAdapter;
 import com.example.map_your_tasks.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.example.map_your_tasks.Model.Task;
+import com.example.map_your_tasks.model.Task;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -62,6 +62,8 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
     private String confirmedDate;
     private String confirmedTime;
     private String taskId;
+
+    private Task editTask;
 
     @Nullable
     @Override
@@ -106,7 +108,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
         // Get task argument if it was passed
         if (args != null) {
-            Task editTask = args.getParcelable("task");
+            editTask = args.getParcelable("task");
 
             // Get and populate task information on display
             taskId = editTask.getId();
@@ -185,10 +187,10 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         builder.setPositiveButton("Yes, use this address", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                confirmedAddString = addressString;
                 mValidatedAddress.setText(addressString);
                 longitude = address.getLongitude();
                 latitude = address.getLatitude();
-                confirmedAddString = addressString;
             }
         });
         builder.setNegativeButton("No, enter another address", new DialogInterface.OnClickListener() {
@@ -237,6 +239,13 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         Boolean update = false;
         String name = mEditName.getText().toString().trim();
         String description = mEditDescription.getText().toString().trim();
+
+        //Case where user updated other attributes and not pressed validate address
+        if((confirmedAddString ==null) && (this.taskId != null) && (editTask != null)){
+            confirmedAddString = editTask.getAddress();
+            longitude = editTask.getLongitude();
+            latitude = editTask.getLatitude();
+        }
 
         String formattedDate = null;
 
