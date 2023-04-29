@@ -236,14 +236,14 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                 notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_KEY, notification);
             }
 
-            return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE);
         }
 
         private boolean isNotificationActive(final Context context, final int taskId) {
             final Intent notificationIntent = new Intent(context, NotificationPublisher.class);
             // Using the no create flag, if the pending intent does not exist, null will be returned
             // So a non-null return means that the notification is already active
-            return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_NO_CREATE) != null;
+            return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_NO_CREATE + PendingIntent.FLAG_IMMUTABLE) != null;
         }
 
         private static Date parseDueDate(final Context context, final String dueDate) {
