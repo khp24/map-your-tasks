@@ -1,17 +1,13 @@
-package com.example.map_your_tasks.Model;
+package com.example.map_your_tasks.model;
 
 import android.icu.text.SimpleDateFormat;
-import android.location.Address;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import org.w3c.dom.Text;
-
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 

@@ -1,9 +1,8 @@
-package com.example.map_your_tasks.Model;
+package com.example.map_your_tasks.model;
 
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
-import android.icu.util.TimeZone;
-import android.text.TextUtils;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.map_your_tasks.R;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -139,6 +133,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         if(task.isComplete()== false){
             // Set the custom layout
             popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+            if (Build.VERSION.SDK_INT > 29) {
+                popupMenu.setForceShowIcon(true);
+            }
 
             // Set click listeners for each option
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

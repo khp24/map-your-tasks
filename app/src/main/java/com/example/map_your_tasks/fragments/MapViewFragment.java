@@ -22,8 +22,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.map_your_tasks.Model.Task;
-import com.example.map_your_tasks.Model.TaskAdapter;
+import com.example.map_your_tasks.model.Task;
+import com.example.map_your_tasks.model.TaskAdapter;
 import com.example.map_your_tasks.R;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import com.example.map_your_tasks.Model.MapTaskAdapter;
+import com.example.map_your_tasks.model.MapTaskAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;

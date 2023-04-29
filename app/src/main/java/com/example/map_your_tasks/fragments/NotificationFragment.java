@@ -20,9 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.map_your_tasks.Model.NotificationTaskAdapter;
-import com.example.map_your_tasks.Model.Task;
-import com.example.map_your_tasks.Model.TaskAdapter;
+import com.example.map_your_tasks.model.NotificationTaskAdapter;
+import com.example.map_your_tasks.model.Task;
+import com.example.map_your_tasks.model.TaskAdapter;
 import com.example.map_your_tasks.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;

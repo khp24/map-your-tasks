@@ -1,4 +1,4 @@
-package com.example.map_your_tasks.Model;
+package com.example.map_your_tasks.model;
 
 import android.view.LayoutInflater;
 import android.view.View;
