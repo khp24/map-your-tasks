@@ -32,7 +32,7 @@
         <receiver android:name=".notification.NotificationPublisher"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAaeDZ5tW6uP8hfrH71UzH-MUc1Jl2XX68" />
+            android:value="${MAPS_API_KEY}" />
     </application>
 
 </manifest>
