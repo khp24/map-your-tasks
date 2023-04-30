@@ -36,18 +36,24 @@ public class TaskListFragment extends Fragment implements TaskAdapter.TaskAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_task_list, container, false);
+
+        // Wire components
         mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTaskAdapter = new TaskAdapter();
         mTaskAdapter.setTaskAdapterListener(this);
         mRecyclerView.setAdapter(mTaskAdapter);
 
+        //Get uid from the user
         firebaseAuth = FirebaseAuth.getInstance();
         String uid = firebaseAuth.getUid();
         Log.d("uid", uid);
 
+        //Order by incomplete first and then completed
         Query firebaseQuery = FirebaseDatabase.getInstance().getReference("tasks")
                 .child(uid).orderByChild("complete");
+
+        // On data change update the recycler view
         firebaseQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
