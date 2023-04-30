@@ -13,13 +13,44 @@ import java.util.Objects;
 
 public class Task implements Parcelable {
 
+    /**
+     * The unique indetifier for the task in the database
+     */
     private String id;
+
+    /**
+     * If the task is complete
+     */
     private boolean isComplete;
+
+    /**
+     * The task name
+     */
     private String name;
+
+    /**
+     * The task description
+     */
     private String description;
+
+    /**
+     * The task due date as an ISO 8601 string
+     */
     private String dueDate;
+
+    /**
+     * The task latitude
+     */
     private double latitude;
+
+    /**
+     * The task longitude
+     */
     private double longitude;
+
+    /**
+     * The task address as a formatted string
+     */
     private String address;
 
     public Task() {}
@@ -122,6 +153,10 @@ public class Task implements Parcelable {
         this.address = address;
     }
 
+    /**
+     * Get formatted date
+     * @return Formatted task date
+     */
     public Date getDate() {
         String dueDate = this.getDueDate();
         Date date = null;
@@ -142,6 +177,10 @@ public class Task implements Parcelable {
         return date;
     }
 
+    /**
+     * Get the formatted time
+     * @return The formatted time
+     */
     public Date getTime() {
         Date time = null;
         if (!TextUtils.isEmpty(dueDate) && dueDate.length() > 11) {
