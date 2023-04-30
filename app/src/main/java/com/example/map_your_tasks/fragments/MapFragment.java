@@ -71,6 +71,7 @@ public class MapFragment extends Fragment {
             operateOnMap(map -> {
                 map.addMarker(new MarkerOptions().position(latLng)
                         .icon(descriptor).title("You!"));
+                // Zoom to user's current location
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 8));
             });
         };
@@ -115,6 +116,7 @@ public class MapFragment extends Fragment {
                 else {
                     final LatLng posn = new LatLng(task.getLatitude(),
                             task.getLongitude());
+                    // Make a marker and give it a title equal to the task's title
                     final Marker marker = googleMap.addMarker(
                             new MarkerOptions().position(posn).title(task.getName()));
                     markersByTask.put(task, marker);
