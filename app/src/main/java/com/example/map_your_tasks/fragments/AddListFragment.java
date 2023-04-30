@@ -139,6 +139,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    /**
+     * Update date label from the date picker
+     */
     private void updateDateLabel(){
         String myFormat="MM/dd/yy";
         SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
@@ -147,6 +150,11 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         confirmedDate = dateFormat2.format(calendar.getTime());
     }
 
+    /**
+     * This function updates hour and minutes based on the user input
+     * @param hourOfDay hour from time picker
+     * @param minute minutes from time picker
+     */
     private void updateTime(int hourOfDay, int minute) {
         mEditTime.setText(String.format("%02d:%02d", hourOfDay, minute));
         Calendar calendar = Calendar.getInstance();
@@ -155,6 +163,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         confirmedTime = String.format("%02d:%02d:00", hourOfDay, minute);
     }
 
+    /**
+     * Validate address using geocorder, top match is shown to the user
+     */
     private void validateAddress() {
         final String enteredAddress = mEditAddress.getText().toString();
 
@@ -172,9 +183,13 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         askForValidationConfirmation(foundAddress);
     }
 
+    /**
+     * Function to ask user if the validated address is correct
+     * @param address input from validateAddress() method
+     */
     public void askForValidationConfirmation(final Address address) {
         // After the Geocoder has found an address, confirm with the user that its right
-
+        // Build address string to store in the database
         final StringBuilder addressTextBuilder = new StringBuilder();
         for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
             addressTextBuilder.append(address.getAddressLine(i));
@@ -186,6 +201,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         builder.setMessage("Does this address look right: " + addressString);
         builder.setPositiveButton("Yes, use this address", new DialogInterface.OnClickListener() {
             @Override
+            //assign valid address information to variables used later to store in firebase database
             public void onClick(DialogInterface dialogInterface, int i) {
                 confirmedAddString = addressString;
                 mValidatedAddress.setText(addressString);
@@ -205,6 +221,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    /**
+     * Setup date picker for user input
+     */
     private void setupDatePicker() {
         // This will listen for the date being set on our date picker
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -222,6 +241,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    /**
+     * Setup time picker for time input from the user
+     */
     private void setupTimePicker() {
         // This will listen for the time being set on our time picker
         TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
@@ -235,8 +257,13 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 12, 0, true).show();
     }
 
+    /**
+     * Method used to add or update the Task
+     */
     public void confirm() {
         Boolean update = false;
+
+        //Retrieve task name and description from the field
         String name = mEditName.getText().toString().trim();
         String description = mEditDescription.getText().toString().trim();
 
@@ -249,6 +276,7 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
         String formattedDate = null;
 
+        //Format time based on user inputs
         if ((confirmedDate != null) && (confirmedTime != null)) {
             formattedDate = confirmedDate + " " + confirmedTime;;
         } else if((confirmedDate !=null)&&(confirmedTime == null)) {
@@ -267,6 +295,8 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
 
             String toastText;
             String taskId;
+
+            //Check if this is a new task or existing one
             if (this.taskId == null) {
                 toastText = "New Task added";
                 taskId = firebaseDatabase.push().getKey();
@@ -275,11 +305,14 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
                 taskId = this.taskId;
                 update = true;
             }
+
+            //Create task and load firebase
             Task  newTask = new Task(taskId,false,  name,  description, formattedDate, latitude, longitude, confirmedAddString);
             firebaseDatabase.child(taskId).setValue(newTask);
             Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
             clearFields();
 
+            //if this was for update navigate back to recycler view
             if(update == true) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -292,6 +325,9 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * clear fields on the page
+     */
     private void clearFields() {
         mEditName.setText("");
         mEditDescription.setText("");
@@ -304,6 +340,10 @@ public class AddListFragment extends Fragment implements View.OnClickListener {
         confirmedTime = null;
     }
 
+    /**
+     * Handles on click
+     * @param view from on create
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

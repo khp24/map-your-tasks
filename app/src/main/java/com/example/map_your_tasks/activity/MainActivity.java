@@ -39,12 +39,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Wire components
         mImageView = (ImageView) findViewById(R.id.imageViewAvatar);
         mImageView.setImageResource(R.mipmap.ic_launcher);
 
         msignInButton = findViewById(R.id.signInButton);
         msignInButton.setOnClickListener(this);
 
+        //Create request
         createRequest();
 
         // Initialize firebase auth
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Create google sign in client with server client ID
+     */
     private void createRequest(){
         // Initialize sign in options the client-id is copied form google-services.json file
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -71,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         googleSignInClient = GoogleSignIn.getClient(MainActivity.this, googleSignInOptions);
     }
 
+    /**
+     * Method to login user, calls activity launcher that retrieves the account
+     */
     private void loginUser(){
         Intent intent = googleSignInClient.getSignInIntent();
         activityResultLauncher.launch(intent);
@@ -93,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     });
 
+    /**
+     * validates if the login was successful
+     * @param token from Google account
+     */
     private void auth(String token)
     {
         AuthCredential credential = GoogleAuthProvider.getCredential(token, null);
@@ -123,6 +135,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * On click handler for sign in button
+     * @param view from onCreate method
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
