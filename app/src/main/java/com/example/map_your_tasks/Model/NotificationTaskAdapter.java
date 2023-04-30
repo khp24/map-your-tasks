@@ -109,7 +109,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             mTimeTextView.setText(task.getDueDate());
 
             // When initializing the button, check if there is a notification currently active
-            // for this task
+            // for this task and set the button state accordingly
             if (isNotificationActive(context, taskId)) {
                 mNotificationSetButton.setChecked(true);
                 mNotificationSetButton.setButtonDrawable(R.drawable.notification_on);
@@ -135,8 +135,8 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                         // Set the icon to let the user know that the notification is on
                         mNotificationSetButton.setButtonDrawable(R.drawable.notification_on);
 
+                        // Build the notification and an intent to send the notification
                         final Notification notification = builder.build();
-
                         final PendingIntent pendingIntent = buildPendingIntent(context, taskId,
                                 notification);
 
@@ -147,6 +147,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                             return;
                         }
 
+                        // Send the notification
                         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmDelay, pendingIntent);
                     }
@@ -215,6 +216,7 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
             }
             long alarmDelay = SystemClock.elapsedRealtime() + timeDiff;
 
+            // Send the notification
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmDelay, newPendingIntent);
 
@@ -236,6 +238,8 @@ public class NotificationTaskAdapter extends RecyclerView.Adapter<NotificationTa
                 notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_KEY, notification);
             }
 
+            // Return the pending intent, cancelling any for this taskId which had been created
+            // previously
             return PendingIntent.getBroadcast(context, taskId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE);
         }
 

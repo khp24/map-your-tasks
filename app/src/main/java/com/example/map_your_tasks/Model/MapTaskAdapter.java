@@ -81,7 +81,7 @@ public class MapTaskAdapter extends RecyclerView.Adapter<MapTaskAdapter.TaskView
         // Given a list of tasks, ensures that they are NOT present in the recycler view
         for (final Task task : tasksToRemove) {
             if (tasks.contains(task)) {
-                // It's not in the current list, add it
+                // It's not in the current list, remove it
                 final int index = tasks.indexOf(task);
                 tasks.remove(task);
                 notifyItemRemoved(index);

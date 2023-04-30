@@ -76,9 +76,11 @@ public class MapViewFragment extends Fragment {
     }
 
     private void loadTasksAndFragment(final View rootView, final MapFragment fragment) {
+        // Get the current user's ID
         final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         final String uid = firebaseAuth.getUid();
 
+        // Get the tasks from the database, just for this user
         final Query firebaseQuery = FirebaseDatabase.getInstance().getReference("tasks")
                 .child(uid).orderByChild("complete");
 
@@ -90,6 +92,7 @@ public class MapViewFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Task task = dataSnapshot.getValue(Task.class);
                     task.setId(dataSnapshot.getKey());
+                    // Only include non-complete tasks which have locations set
                     if (task.getAddress() != null && !task.isComplete()) {
                         taskList.add(task);
                     }
@@ -155,6 +158,7 @@ public class MapViewFragment extends Fragment {
                     return;
                 }
 
+                // Update the tasks to be only those within maxDist of the user
                 filterTasksWithinDistance(fragment, mRecyclerView, tasks, maxDist);
             }
         });
@@ -195,6 +199,7 @@ public class MapViewFragment extends Fragment {
             mapFragment.makeAllTasksInvisible();
             mCheckAll.setChecked(false);
         };
+        // This will get executed if the user's location can't be found
         final Runnable informUserOfLocationFailure = () -> {
             Toast.makeText(getContext(), "Unable to load user location",
                     Toast.LENGTH_SHORT).show();
